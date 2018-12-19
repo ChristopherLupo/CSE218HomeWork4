@@ -1,0 +1,16 @@
+public class HW5 {
+	public static void main(String[] args) {
+		String value = "Happy Days";
+
+		reverseString(value);
+	}
+
+	public static void reverseString(String value) {
+		if (value.length() < 1) {
+			System.out.println(value);
+		} else {
+			System.out.print(value.charAt(value.length() - 1));
+			reverseString(value.substring(0, value.length() - 1));
+		}
+	}
+}
