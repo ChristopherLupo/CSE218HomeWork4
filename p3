@@ -1,0 +1,201 @@
+public class Flight {
+
+	private int number;
+	private String name;
+	private int priority;
+	private int time;
+
+	public Flight(int number, String name, int priority, int time) {
+		super();
+		this.number = number;
+		this.name = name;
+		this.priority = priority;
+		this.time = time;
+	}
+
+	public int getNumber() {
+		return number;
+	}
+
+	public void setNumber(int number) {
+		this.number = number;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public int getPriority() {
+		return priority;
+	}
+
+	public void setPriority(int priority) {
+		this.priority = priority;
+	}
+
+	public int getTime() {
+		return time;
+	}
+
+	public void setTime(int time) {
+		this.time = time;
+	}
+
+	@Override
+	public String toString() {
+		return "[number=" + number + ", name=" + name + ", priority=" + priority + ", time=" + time + "]";
+	}
+
+}
+
+public class PriorityQ {
+	private int maxSize;
+	private Flight[] queArray;
+	private int nElems;
+
+	public PriorityQ(int maxSize) {
+		this.maxSize = maxSize;
+		queArray = new Flight[maxSize];
+		nElems = 0;
+	}
+
+	public void insert(Flight value) {
+		int j;
+		if (nElems == 0) {
+			queArray[nElems++] = value;
+		} else {
+			for (j = nElems - 1; j >= 0; j--) {
+				if (value.getPriority() < queArray[j].getPriority()) {
+					queArray[j + 1] = queArray[j];
+			} else if(value.getPriority() == queArray[j].getPriority() && value.getTime() > queArray[j].getTime()){
+						queArray[j+1] = queArray[j];
+				} else {
+					break;
+				}
+			}
+			queArray[j + 1] = value; // insert the new value
+			nElems++;
+		}
+	}
+
+	public Flight remove() {
+		return queArray[--nElems];
+	}
+
+	public boolean isEmpty() {
+		return nElems == 0;
+	}
+
+	public boolean isFull() {
+		return nElems == maxSize;
+	}
+}
+
+import javafx.application.Application; 
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.text.Text;
+import javafx.stage.Stage;
+
+public class HW3 extends Application {
+	public static int counter = 0;
+
+	public static void main(String[] args) {
+		Application.launch(args);
+	}
+
+	@Override
+	public void start(Stage primaryStage) {
+		BorderPane bp = new BorderPane();
+
+		HBox buttons1 = new HBox();
+
+		Button b1 = new Button("Add Plane");
+		Button b2 = new Button("Land Next Plane");
+		Button b3 = new Button("Land All Planes");
+		
+		buttons1.getChildren().addAll(b1, b2, b3);
+
+		buttons1.setAlignment(Pos.BOTTOM_CENTER);
+
+		bp.setBottom(buttons1);
+
+		GridPane gp = new GridPane();
+
+		Text t1 = new Text("Plane Name:");
+		Text t2 = new Text("Plane Priority:");
+		Text t3 = new Text("Plane Time:");
+		TextField tf1 = new TextField();
+		TextField tf2 = new TextField();
+		TextField tf3 = new TextField();
+
+		gp.addRow(0, t1);
+		gp.addRow(0, tf1);
+
+		gp.addRow(1, t2);
+		gp.addRow(1, tf2);
+
+		gp.addRow(2, t3);
+		gp.addRow(2, tf3);
+
+		gp.setAlignment(Pos.TOP_CENTER);
+
+		bp.setTop(gp);
+
+		TextArea ta = new TextArea();
+
+		bp.setCenter(ta);
+
+		Scene scene = new Scene(bp, 300, 200);
+		primaryStage.setScene(scene);
+		primaryStage.show();
+
+		PriorityQ q = new PriorityQ(100);
+
+		b1.setOnAction(e -> {
+			if (tf1.getText().equals("")) {
+				System.out.println("Put a name in first field");
+			} else if (tf2.getText().equals("")) {
+				System.out.println("Put a level of priority in second field");
+			} else if (tf2.getText().equals("")) {
+				System.out.println("Put a time of arrival in field three");
+			} else {
+				counter++;
+				q.insert(new Flight(counter, tf1.getText(), Integer.parseInt(tf2.getText()),
+						Integer.parseInt(tf3.getText())));
+
+				tf1.clear();
+				tf2.clear();
+				tf3.clear();
+			}
+		});
+		b2.setOnAction(e -> {
+			if(q.isEmpty()){
+				System.out.println("There aren't any planes to land");
+			}else{
+				ta.setText(ta.getText() + "\n " + q.remove());
+			}
+		});
+
+		b3.setOnAction(e -> {
+			if(q.isEmpty()){
+				System.out.println("There aren't any planes to land");
+			}else{
+				while(q.isEmpty() == false){
+				ta.setText(ta.getText() + "\n " + q.remove());
+				}
+			}
+		});
+	}
+
+}
